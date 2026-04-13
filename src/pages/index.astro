@@ -1,0 +1,21 @@
+---
+import { getPageBySlugAndLayout, getAllPagesAndLayout, pagesSlugToModelApiKeyMap } from "../cms/dato";
+import isPreview from "../utils/isPreview";
+
+import Layout from "../layouts/Layout.astro";
+import Page from "../components/global/Page.astro";
+
+let { page, layout } = await getPageBySlugAndLayout(undefined);
+
+const allData = await getAllPagesAndLayout();
+const slugToModelApiKeyMap = pagesSlugToModelApiKeyMap(allData.pages);
+---
+
+<Layout
+    layout={layout}
+    slugToModelApiKeyMap={slugToModelApiKeyMap}
+    template={page._modelApiKey}
+    seoMetaTags={page._seoMetaTags}
+>
+    <Page data={page} />
+</Layout>

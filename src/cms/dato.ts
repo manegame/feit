@@ -33,18 +33,20 @@ export const generateStaticPaths = async () => {
 
     const slugToModelApiKeyMap = pagesSlugToModelApiKeyMap(data.pages);
 
-    const staticPaths = Object.values(data.pages).map((page) => {
-        return {
-            params: { slug: page.slug },
-            props: {
-                slugToModelApiKeyMap,
-                data: {
-                    page,
-                    layout: data.layout,
+    const staticPaths = Object.values(data.pages)
+        .filter((page) => page.slug !== undefined)
+        .map((page) => {
+            return {
+                params: { slug: page.slug },
+                props: {
+                    slugToModelApiKeyMap,
+                    data: {
+                        page,
+                        layout: data.layout,
+                    },
                 },
-            },
-        };
-    });
+            };
+        });
 
     return staticPaths;
 };
