@@ -1,18 +1,18 @@
 ---
-import { getPageBySlugAndLayout, getAllPagesAndLayout, pagesSlugToModelApiKeyMap } from "../cms/dato";
-import isPreview from "../utils/isPreview";
+import { getAllPagesAndLayout, pagesSlugToModelApiKeyMap } from "../cms/dato";
 
 import Layout from "../layouts/Layout.astro";
 import Page from "../components/global/Page.astro";
 
-let { page, layout } = await getPageBySlugAndLayout(undefined);
+const data = await getAllPagesAndLayout();
+const slugToModelApiKeyMap = pagesSlugToModelApiKeyMap(data.pages);
 
-const allData = await getAllPagesAndLayout();
-const slugToModelApiKeyMap = pagesSlugToModelApiKeyMap(allData.pages);
+// The directorsPageFeit singleton has no slug, so it's stored with key "undefined"
+const page = data.pages["undefined"];
 ---
 
 <Layout
-    layout={layout}
+    layout={data.layout}
     slugToModelApiKeyMap={slugToModelApiKeyMap}
     template={page._modelApiKey}
     seoMetaTags={page._seoMetaTags}
