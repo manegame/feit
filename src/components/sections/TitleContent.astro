@@ -1,0 +1,14 @@
+---
+const { data } = Astro.props;
+---
+
+<section class="section-title-content flex flex-col gap-25 md:gap-35">
+    {
+        data.items.map((item: { title: string; content: string }) => (
+            <div class="flex flex-col gap-8">
+                <p class="text-caption">{item.title}</p>
+                <div class="text-nav wysiwyg-content" set:html={item.content} />
+            </div>
+        ))
+    }
+</section>

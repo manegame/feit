@@ -1,0 +1,71 @@
+---
+import EdgeGradient from "../global/EdgeGradient.astro";
+import Section from "../global/Section.astro";
+import DatoLink from "../global/DatoLink.astro";
+import Credits from "../global/Credits.astro";
+
+const { data } = Astro.props;
+
+const hasSubnavigation =
+    data.subnavigation &&
+    Array.isArray(data.subnavigation.blocks) &&
+    data.subnavigation.blocks.length > 0;
+---
+
+<div class="px-gutter flex min-h-dvh items-center justify-center">
+    <div
+        transition:persist
+        class="lg:px-gutter fixed top-116 right-0 left-0 z-20 flex items-start justify-between gap-10 lg:pointer-events-none lg:inset-0 lg:h-dvh lg:w-screen lg:items-end lg:bg-transparent"
+    >
+        <div
+            class="w-full lg:relative lg:-top-[0.55em] lg:flex lg:h-1/2 lg:w-6/24 lg:flex-col lg:justify-between lg:gap-y-28 lg:pb-20 lg:pl-[12.5%]"
+        >
+            {
+                hasSubnavigation && (
+                    <div class="relative flex size-full justify-center lg:h-auto lg:flex-col lg:justify-between">
+                        <nav
+                            id="subnavigation"
+                            data-subnav-id={data.subnavigation.id}
+                            class="px-gutter scrollbar-hide text-nav flex items-baseline gap-17 overflow-x-auto scroll-smooth max-lg:transform-[translate(0)]! lg:flex-col lg:gap-28 lg:px-0"
+                        >
+                            {data.subnavigation.blocks.map((block: any) => (
+                                <div class="flex shrink-0 items-baseline gap-17 lg:flex-col lg:gap-0">
+                                    {Array.isArray(block.links) &&
+                                        block.links.map((link: any) => (
+                                            <div class="pointer-events-auto shrink-0 lg:flex lg:h-20 lg:items-center">
+                                                <DatoLink
+                                                    class="subnavigation-item opacity-30 transition-opacity duration-150 hover:opacity-100 [&.link-exact]:opacity-100"
+                                                    link={link}
+                                                />
+                                            </div>
+                                        ))}
+                                </div>
+                            ))}
+                        </nav>
+                    </div>
+                )
+            }
+            <div class="pointer-events-auto hidden lg:mt-auto lg:block">
+                <Credits />
+            </div>
+        </div>
+    </div>
+
+    <div
+        id="basic-content"
+        class="flex w-full flex-col gap-100 pt-212 pb-80 md:w-10/12 lg:w-4/12 lg:py-112"
+    >
+        <div class="sections-wrapper">
+            {
+                Array.isArray(data.content) &&
+                    data.content.map((blok: any) => {
+                        return <Section data={blok} />;
+                    })
+            }
+        </div>
+        <div class="lg:hidden">
+            <Credits />
+        </div>
+    </div>
+    <EdgeGradient />
+</div>

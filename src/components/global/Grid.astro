@@ -1,0 +1,21 @@
+---
+const COLS = 12;
+---
+
+<div
+    transition:persist
+    id="debug-grid"
+    data-enabled="false"
+    class="px-gutter pointer-events-none fixed inset-0 z-100 flex flex-row data-[enabled=false]:hidden"
+>
+    {
+        Array.from({ length: COLS }).map((_, i) => (
+            <div class="flex w-1/6 justify-center outline-1 outline-[#00ff00]/40 nth-last-[-n+6]:hidden md:flex! md:w-1/12">
+                <div class="h-full w-1 bg-[#00ff00]/20" />
+            </div>
+        ))
+    }
+    <div class="absolute top-[50%] right-0 left-0 h-1 -translate-y-9 bg-[#ff0000] opacity-50"></div>
+    <div class="absolute top-[50%] right-0 left-0 h-1 bg-[#ff0000] opacity-50"></div>
+    <div class="absolute top-[50%] right-0 left-0 h-1 translate-y-9 bg-[#ff0000] opacity-50"></div>
+</div>

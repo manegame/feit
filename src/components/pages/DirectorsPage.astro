@@ -1,0 +1,74 @@
+---
+import DatoLink from "../global/DatoLink.astro";
+
+import { getDataFromRSS } from "../../utils/wiredrive";
+
+const { data } = Astro.props;
+
+const directors = data.directors || [];
+
+const rssVideoPromises: Promise<{ video: any; poster: any }>[] = [];
+
+directors.forEach((director: any) => {
+    if (director.showcaseRss) {
+        const rssPromise = getDataFromRSS(director.showcaseRss).then((showcase) => {
+            director.showcase = showcase;
+            return showcase;
+        });
+        rssVideoPromises.push(rssPromise);
+    }
+});
+await Promise.all(rssVideoPromises);
+
+const directorsWithDuplicate = [...directors, ...directors];
+---
+
+<div
+    id="directors-page"
+    class="relative h-dvh touch-none overflow-hidden overscroll-none select-none"
+>
+    <div class="pointer-events-none absolute inset-0 z-0">
+        <div id="overlay" class="absolute inset-0 z-3 bg-black opacity-40"></div>
+        <img
+            id="low-power-fallback"
+            src=""
+            alt=""
+            class="absolute inset-0 h-full w-full object-cover"
+        />
+        <video
+            id="director-video"
+            class="absolute inset-0 h-full w-full object-cover"
+            muted
+            loop
+            playsinline
+        >
+        </video>
+    </div>
+    <div class="absolute inset-0 z-1 max-lg:mask-(--masking-edge-gradient)">
+        <div id="directors-wrapper" class="absolute top-[50%] right-0 left-0 h-18 -translate-y-1/2">
+            <div id="directors-list" class="text-nav flex w-full flex-col items-center">
+                {
+                    directorsWithDuplicate.map((director, index) => (
+                        <div
+                            data-video={director.showcase.video?.url}
+                            data-poster={director.showcase.poster?.url}
+                            data-color={director.color.hex}
+                            data-index={index}
+                            data-slug={director.slug}
+                            data-director={director.name}
+                            data-selected="false"
+                            data-center="false"
+                            class="director-item h-20"
+                        >
+                            <DatoLink class="relative" link={{ internalLink: director }}>
+                                <span class="opacity-30 transition-opacity duration-200 in-data-[selected=true]:opacity-100">
+                                    {director.name}
+                                </span>
+                            </DatoLink>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </div>
+</div>

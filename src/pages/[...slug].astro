@@ -1,0 +1,33 @@
+---
+import { generateStaticPaths, getPreviewData } from "../cms/dato";
+import isPreview from "../utils/isPreview";
+
+import Layout from "../layouts/Layout.astro";
+import Page from "../components/global/Page.astro";
+
+export async function getStaticPaths() {
+    return await generateStaticPaths();
+}
+
+const params = Astro.params;
+
+const props = Astro.props;
+
+let data = props.data;
+let slugToModelApiKeyMap = props.slugToModelApiKeyMap;
+
+if (isPreview()) {
+    const previewData = await getPreviewData(params);
+    data = previewData.data;
+    slugToModelApiKeyMap = previewData.slugToModelApiKeyMap;
+}
+---
+
+<Layout
+    layout={data.layout}
+    slugToModelApiKeyMap={slugToModelApiKeyMap}
+    template={data.page._modelApiKey}
+    seoMetaTags={data.page._seoMetaTags}
+>
+    <Page data={data.page} />
+</Layout>

@@ -1,0 +1,15 @@
+---
+const { top = 130, topFade = 70, bottom = 45, bottomFade = 50 } = Astro.props;
+---
+
+<div
+    style={{
+        "--top-start": `${top}px`,
+        "--top-end": `${topFade + top}px`,
+        "--bottom-start": `${bottom}px`,
+        "--bottom-end": `${bottomFade + bottom}px`,
+    }}
+    class:list={[
+        "pointer-events-none fixed inset-0 lg:hidden",
+        `bg-linear-[to_bottom,var(--color-black),var(--color-black)_var(--top-start),transparent_var(--top-end),transparent_calc(100%-var(--bottom-end)),var(--color-black)_calc(100%-var(--bottom-start)),var(--color-black)]`,
+    ]}></div>

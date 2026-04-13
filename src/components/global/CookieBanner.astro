@@ -1,0 +1,107 @@
+---
+---
+
+<!-- Mobile: vertical along the right edge -->
+<div
+    id="cookie-banner-mobile"
+    class="pointer-events-none fixed top-1/2 right-0 z-[9999] pr-gutter md:hidden"
+    role="dialog"
+    aria-label="Cookie consent"
+>
+    <div class="flex items-center gap-10 overflow-hidden whitespace-nowrap" style="transform-origin: right center; transform: rotate(-90deg) translateX(50%);">
+        <p class="text-nav-mobile cookie-text opacity-60" >
+            This site uses cookies.
+        </p>
+        <div class="flex shrink-0 gap-8 overflow-hidden">
+            <button class="cookie-btn-reject cookie-text pointer-events-auto text-nav-mobile opacity-30 transition-opacity duration-150 hover:opacity-100" style="translate: 0 100%;">
+                Reject
+            </button>
+            <button class="cookie-btn-accept cookie-text pointer-events-auto text-nav-mobile transition-opacity duration-150 hover:opacity-60" style="translate: 0 100%;">
+                Accept
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Desktop: horizontal along the top -->
+<div
+    id="cookie-banner-desktop"
+    class="px-gutter pointer-events-none fixed top-0 left-0 z-[9999] hidden w-full pt-20 md:block"
+    role="dialog"
+    aria-label="Cookie consent"
+>
+    <div class="flex items-center justify-between gap-10 overflow-hidden">
+        <p class="text-caption cookie-text opacity-60" style="translate: 0 100%;">
+            This site uses cookies to analyze traffic.
+        </p>
+        <div class="flex shrink-0 gap-8 overflow-hidden">
+            <button class="cookie-btn-reject cookie-text pointer-events-auto text-caption opacity-30 transition-opacity duration-150 hover:opacity-100" style="translate: 0 100%;">
+                Reject
+            </button>
+            <button class="cookie-btn-accept cookie-text pointer-events-auto text-caption transition-opacity duration-150 hover:opacity-60" style="translate: 0 100%;">
+                Accept
+            </button>
+        </div>
+    </div>
+</div>
+
+<script is:inline>
+    (function () {
+        var CONSENT_KEY = "cookie_consent";
+
+        function updateGTMConsent(value) {
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                window.dataLayer.push(arguments);
+            }
+            gtag("consent", "update", {
+                analytics_storage: value,
+                ad_storage: value,
+                ad_user_data: value,
+                ad_personalization: value,
+            });
+        }
+
+        function showBanner() {
+            var items = document.querySelectorAll(".cookie-text");
+            items.forEach(function (el) {
+                el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
+                el.style.translate = "0 0%";
+            });
+        }
+
+        function hideBanner() {
+            var items = document.querySelectorAll(".cookie-text");
+            items.forEach(function (el) {
+                el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
+                el.style.translate = "0 -100%";
+            });
+        }
+
+        var consent = localStorage.getItem(CONSENT_KEY);
+
+        if (consent === "granted") {
+            updateGTMConsent("granted");
+        } else if (consent === "denied") {
+            updateGTMConsent("denied");
+        } else {
+            setTimeout(showBanner, 1000);
+        }
+
+        document.querySelectorAll(".cookie-btn-accept").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                localStorage.setItem(CONSENT_KEY, "granted");
+                updateGTMConsent("granted");
+                hideBanner();
+            });
+        });
+
+        document.querySelectorAll(".cookie-btn-reject").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                localStorage.setItem(CONSENT_KEY, "denied");
+                updateGTMConsent("denied");
+                hideBanner();
+            });
+        });
+    })();
+</script>

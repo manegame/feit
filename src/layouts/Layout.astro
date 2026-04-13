@@ -1,0 +1,86 @@
+---
+import "../styles/global.css";
+import "lenis/dist/lenis.css";
+
+import { ClientRouter } from "astro:transitions";
+
+import Navigation from "../components/global/Navigation.astro";
+import Loader from "../components/global/Loader.astro";
+import Grid from "../components/global/Grid.astro";
+import Seo from "../components/global/Seo.astro";
+
+import CookieBanner from "../components/global/CookieBanner.astro";
+import isPreview from "../utils/isPreview";
+
+const { layout, template, seoMetaTags, slugToModelApiKeyMap } = Astro.props;
+---
+
+<!doctype html>
+<html transition:name="root" transition:animate="none" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <!-- Google Consent Mode v2 — defaults BEFORE GTM loads -->
+        <script is:inline>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('consent', 'default', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            wait_for_update: 500,
+        });
+        </script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-MBXTPJLK');</script>
+        <!-- End Google Tag Manager -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link
+            rel="preload"
+            as="font"
+            type="font/woff2"
+            href="/fonts/TWKLausanne-500.woff2"
+            crossorigin
+        />
+        {seoMetaTags && <Seo data={seoMetaTags} />}
+        <ClientRouter />
+    </head>
+    <body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MBXTPJLK"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+        {layout?.navigation && <Navigation template={template} data={layout.navigation} />}
+        <slot />
+        <Loader />
+        {isPreview() && <Grid />}
+        <CookieBanner />
+        <div
+            id="data"
+            class="pointer-events-none hidden"
+            aria-hidden="true"
+            data-data={JSON.stringify({ slugToModelApiKeyMap })}></div>
+    </body></html
+>
+
+<script>
+    import Zauberberg from "../scripts/Zauberberg";
+
+    const app = new Zauberberg();
+    app.init();
+
+    document.addEventListener("astro:page-load", () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            event: "gtm.historyChange",
+            "gtm.newUrl": window.location.href,
+        });
+    });
+</script>

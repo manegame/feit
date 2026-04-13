@@ -1,0 +1,105 @@
+---
+import { Icon } from "astro-icon/components";
+
+import EdgeGradient from "../global/EdgeGradient.astro";
+
+import LeftRightTitle from "../news/LeftRightTitle.astro";
+import Details from "../news/Details.astro";
+import DatoImage from "../global/DatoImage.astro";
+import DatoLink from "../global/DatoLink.astro";
+
+const { data } = Astro.props;
+
+// Get unique categories from news items
+const categories = ["All", ...new Set(data.news?.map((item: any) => item.category.category) || [])];
+---
+
+<div class="px-gutter flex min-h-dvh items-center justify-center">
+    <div
+        class="lg:px-gutter fixed top-116 right-0 left-0 z-20 flex items-start justify-between gap-10 lg:pointer-events-none lg:inset-0 lg:h-dvh lg:items-end lg:bg-transparent"
+        id="filters-panel"
+    >
+        <nav
+            class="w-full lg:relative lg:-top-[0.55em] lg:flex lg:h-1/2 lg:w-6/24 lg:flex-col lg:justify-between lg:gap-y-28 lg:pb-20 lg:pl-[12.5%]"
+        >
+            <div
+                class="relative flex size-full justify-center lg:h-auto lg:flex-col lg:justify-between"
+            >
+                <div
+                    id="filters-panel-list"
+                    class="px-gutter scrollbar-hide text-nav flex items-baseline gap-17 overflow-x-auto scroll-smooth max-lg:transform-[translate(0)]! lg:flex-col lg:gap-0 lg:px-0"
+                >
+                    <div class="flex shrink-0 items-baseline gap-17 lg:flex-col lg:gap-0">
+                        {
+                            categories.map((category, index) => (
+                                <div class="pointer-events-auto shrink-0 lg:flex lg:h-20 lg:items-center">
+                                    <button
+                                        type="button"
+                                        data-active={index === 0}
+                                        class="subnavigation-item opacity-30 transition-opacity duration-150 hover:opacity-100 data-[active=true]:opacity-100"
+                                        data-category={category}
+                                    >
+                                        {category}
+                                    </button>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="w-full gap-25 pt-212 pb-80 md:w-10/12 lg:w-4/12 lg:pt-240 lg:pb-112">
+        <ul class="flex flex-col gap-50 lg:gap-100" id="news-list">
+            {
+                data.news?.map((newsItem: any) => (
+                    <li
+                        class="news-item data-[hidden=true]:hidden"
+                        data-hidden="false"
+                        data-news-id={newsItem.id}
+                        data-news-category={newsItem.category.category}
+                    >
+                        <DatoLink
+                            class="flex flex-col items-center gap-8 lg:gap-10"
+                            link={{ internalLink: newsItem }}
+                        >
+                            <div class="w-10/12 sm:w-8/12 md:w-8/10 lg:w-6/8">
+                                <div
+                                    data-flip-id={`${newsItem.id}-details`}
+                                    transition:persist={`${newsItem.id}-details`}
+                                    data-details-id={newsItem.id}
+                                    class="flex w-full flex-col gap-9 lg:gap-10"
+                                >
+                                    <LeftRightTitle
+                                        leftAlignedTitle={newsItem.leftAlignedTitle}
+                                        rightAlignedTitle={newsItem.rightAlignedTitle}
+                                    />
+                                    <Details
+                                        date={newsItem.date}
+                                        category={newsItem.category.category}
+                                    />
+                                </div>
+                            </div>
+                            <div class="aspect-square w-full">
+                                <div
+                                    class="relative size-full"
+                                    data-flip-id={`${newsItem.id}-image`}
+                                    transition:persist={`${newsItem.id}-image`}
+                                    data-image-id={newsItem.id}
+                                >
+                                    {newsItem.cover && (
+                                        <DatoImage
+                                            data={newsItem.cover.responsiveImage}
+                                            imgClass="block absolute inset-0 size-full object-cover"
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </DatoLink>
+                    </li>
+                ))
+            }
+        </ul>
+    </div>
+    <EdgeGradient top={0} topFade={0} />
+</div>

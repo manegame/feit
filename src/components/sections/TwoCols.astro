@@ -1,0 +1,34 @@
+---
+const { data } = Astro.props;
+---
+
+<section class="section-two-cols flex flex-col gap-25 md:gap-35">
+    {
+        data.items.map((item: { title: string; lines: any }) => (
+            <div class="flex flex-col gap-12 md:gap-7">
+                {item.title && (
+                    <p class="text-subtitle italic underline underline-offset-3 md:pl-145 md:no-underline">
+                        {item.title}
+                    </p>
+                )}
+                <div class="flex flex-col gap-12 md:gap-7">
+                    {item.lines.map(
+                        (line: {
+                            leftColText: string;
+                            rightColText: string;
+                        }) => (
+                            <div class="flex flex-col gap-7 md:flex-row md:items-baseline md:gap-15">
+                                <div class="text-caption md:w-130 md:flex-none">
+                                    {line.leftColText}
+                                </div>
+                                <div class="text-nav whitespace-pre-line">
+                                    {line.rightColText}
+                                </div>
+                            </div>
+                        ),
+                    )}
+                </div>
+            </div>
+        ))
+    }
+</section>

@@ -1,0 +1,147 @@
+---
+import DatoLink from "../global/DatoLink.astro";
+import EdgeGradient from "../global/EdgeGradient.astro";
+
+import { getDataFromRSS } from "../../utils/wiredrive";
+
+const { data } = Astro.props;
+
+const videosPromises: Promise<any>[] = [];
+
+data.videos.forEach((video: any) => {
+    if (video.video.previewRss) {
+        const rssPromise = getDataFromRSS(video.video.previewRss).then((preview) => {
+            video.video.preview = preview;
+            return preview;
+        });
+        videosPromises.push(rssPromise);
+    }
+});
+
+const GRID_COLS = 3;
+
+// Simulate grid layout to find rows and positions
+const rows: number[][] = [];
+let currentRow: number[] = [];
+let currentRowWeight = 0;
+
+data.videos.forEach((video: any, index: number) => {
+    const videoWeight = video.featured ? GRID_COLS : 1;
+
+    // If adding this video exceeds grid columns, start a new row
+    if (currentRowWeight + videoWeight > GRID_COLS) {
+        rows.push([...currentRow]);
+        currentRow = [index];
+        currentRowWeight = videoWeight;
+    } else {
+        currentRow.push(index);
+        currentRowWeight += videoWeight;
+    }
+});
+
+// Add the last row
+if (currentRow.length > 0) {
+    rows.push(currentRow);
+}
+
+// Find the center row
+const centerRowIndex = Math.floor(rows.length / 2);
+const centerRow = rows[centerRowIndex];
+
+// Find the center video in that row (middle position)
+let centerVideoIndex = centerRow[Math.floor(centerRow.length / 2)];
+
+await Promise.all(videosPromises);
+
+const getPrevVideoSlug = (index: number) => {
+    const prevIndex = (index - 1 + data.videos.length) % data.videos.length;
+    return data.videos[prevIndex].video.slug;
+};
+
+const getNextVideoSlug = (index: number) => {
+    const nextIndex = (index + 1) % data.videos.length;
+    return data.videos[nextIndex].video.slug;
+};
+---
+
+<div id="work" data-center={centerVideoIndex} class="lg:h-dvh lg:overflow-hidden">
+    <div
+        id="work-wrapper"
+        data-lenis-prevent
+        class="px-gutter size-full scroll-smooth will-change-transform lg:overflow-y-auto"
+    >
+        <div
+            id="work-grid"
+            class="group pointer-events-none mx-auto grid w-full grid-cols-2 gap-x-20 gap-y-60 pt-200 pb-100 lg:w-18/24 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-195 lg:pb-200"
+        >
+            {
+                data.videos.map((video: any, index: number) => (
+                    <DatoLink
+                        class:list={[
+                            "video-item pointer-events-auto relative col-span-1 block aspect-16/10 will-change-transform backface-hidden",
+                            "lg:hover:[&_.overlay]:opacity-0 lg:hover:[&_.video-text]:opacity-100",
+                            {
+                                "lg:col-span-3": video.featured,
+                                "center-video": index === centerVideoIndex,
+                            },
+                        ]}
+                        data-row-index={rows.findIndex((row) => row.includes(index))}
+                        data-prev={getPrevVideoSlug(index)}
+                        data-next={getNextVideoSlug(index)}
+                        link={{ internalLink: video.video }}
+                    >
+                        <div class="relative aspect-16/10 w-full">
+                            <div class="size-full overflow-hidden object-cover">
+                                <video
+                                    class="work-video size-full scale-120"
+                                    autoplay
+                                    muted
+                                    loop
+                                    playsinline
+                                    data-src={video.video.preview.video?.url}
+                                    poster={video.video.preview.poster?.url}
+                                />
+                                <img
+                                    class="work-low-power-fallback absolute inset-0 -z-1 size-full object-cover"
+                                    src={video.video.preview.poster?.url}
+                                    alt=""
+                                />
+                            </div>
+                            <div class="absolute -inset-1 z-1 bg-black opacity-30" />
+                            {video.video.awardIcon && video.video.awardIcon.length > 0 && (
+                                <div class="absolute right-15 bottom-10 z-2 flex flex-wrap-reverse items-center justify-end gap-5">
+                                    {video.video.awardIcon.map((icon: any) => (
+                                        <div class="h-15 w-20 sm:h-25 sm:w-35">
+                                            <img
+                                                src={icon.url}
+                                                alt={icon.alt}
+                                                class="size-full object-contain"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div class="overlay absolute -inset-1 z-3 bg-black opacity-0 transition-opacity duration-300 ease-in-out lg:group-hover:opacity-50" />
+                        </div>
+                        <div class="text-caption z-4 mt-5 flex flex-col gap-2 lg:absolute lg:inset-0 lg:mt-0 lg:justify-center lg:px-15">
+                            <div class="video-text flex flex-col gap-2 transition-opacity duration-300 ease-in-out lg:opacity-0">
+                                <div>&#8216;{video.video.name}&#8217;</div>
+                                <div>{video.video.client}</div>
+                            </div>
+                            <div class="video-text flex gap-2 overflow-hidden text-ellipsis whitespace-nowrap transition-opacity duration-300 ease-in-out lg:opacity-0">
+                                {video.video.externaldirectors ? (
+                                    <span class="opacity-30">{video.video.externaldirectors}</span>
+                                ) : (
+                                    video.video.directors.map((director: any) => (
+                                        <span class="opacity-30">{director.name}</span>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </DatoLink>
+                ))
+            }
+        </div>
+    </div>
+    <EdgeGradient top={0} topFade={0} bottom={0} bottomFade={80} />
+</div>

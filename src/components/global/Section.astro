@@ -1,0 +1,33 @@
+---
+import Blockquote from "../sections/Blockquote.astro";
+import EmbedVideo from "../sections/EmbedVideo.astro";
+import Images from "../sections/Images.astro";
+import IndentedText from "../sections/IndentedText.astro";
+import Links from "../sections/Links.astro";
+import TitleContent from "../sections/TitleContent.astro";
+import TwoCols from "../sections/TwoCols.astro";
+import Wysiwyg from "../sections/Wysiwyg.astro";
+
+const SECTION_BY_MODELAPIKEY: Record<string, Function> = {
+    blockquote_module: Blockquote,
+    embed_video: EmbedVideo,
+    images_module: Images,
+    indented_text_module: IndentedText,
+    links_module: Links,
+    title_content_module: TitleContent,
+    two_cols_module: TwoCols,
+    wysiwyg_module: Wysiwyg,
+} as const;
+
+const props = Astro.props;
+
+const section = SECTION_BY_MODELAPIKEY[props.data._modelApiKey];
+
+if (!section) {
+    console.warn(`No section found for modelApiKey: ${props.data._modelApiKey}.`);
+}
+
+const SectionModule = section;
+---
+
+<SectionModule {...props} />

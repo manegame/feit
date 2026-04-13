@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Lausanne";
+    src: url("/fonts/TWKLausanne-500.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Lausanne";
+    src: url("/fonts/TWKLausanne-500Italic.woff2") format("woff2");
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Giga";
+    src: url("/fonts/KHGiga-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Giga";
+    src: url("/fonts/KHGiga-RegularItalic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@theme {
+    --color-*: initial;
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-grey: #1e1e1e;
+
+    --font-*: initial;
+    --font-lausanne: "Lausanne", sans-serif;
+    --font-giga: "Giga", serif;
+
+    --text-*: initial;
+
+    --text-body: 1.4rem;
+    --text-body--line-height: 1.1;
+    --text-body--font-weight: 500;
+    --text-body--letter-spacing: 0em;
+
+    --text-nav-desktop: 1.7rem;
+    --text-nav-desktop--line-height: 1.1;
+    --text-nav-desktop--font-weight: 500;
+    --text-nav-desktop--letter-spacing: 0em;
+
+    --text-nav-mobile: 1.4rem;
+    --text-nav-mobile--line-height: 1.1;
+    --text-nav-mobile--font-weight: 500;
+    --text-nav-mobile--letter-spacing: 0em;
+
+    --text-nav-kh-desktop: 1.9rem;
+    --text-nav-kh-desktop--line-height: 1.1;
+    --text-nav-kh-desktop--font-weight: 400;
+    --text-nav-kh-desktop--letter-spacing: 0em;
+    --text-nav-kh-desktop--font-feature-settings: "ss07" on;
+
+    --text-nav-kh-mobile: 1.5rem;
+    --text-nav-kh-mobile--line-height: 1.1;
+    --text-nav-kh-mobile--font-weight: 400;
+    --text-nav-kh-mobile--letter-spacing: 0em;
+    --text-nav-kh-mobile--font-feature-settings: "ss07" on;
+
+    --text-caption-desktop: 1rem;
+    --text-caption-desktop--line-height: 1.1;
+    --text-caption-desktop--font-weight: 500;
+    --text-caption-desktop--letter-spacing: 0.05em;
+
+    --text-caption-mobile: 0.9rem;
+    --text-caption-mobile--line-height: 1.1;
+    --text-caption-mobile--font-weight: 500;
+    --text-caption-mobile--letter-spacing: 0.05em;
+
+    --text-quote-desktop: 2.5rem;
+    --text-quote-desktop--line-height: 1.1;
+    --text-quote-desktop--font-weight: 400;
+    --text-quote-desktop--letter-spacing: 0em;
+    --text-quote-desktop--font-feature-settings: "ss07" on;
+
+    --text-quote-mobile: 1.9rem;
+    --text-quote-mobile--line-height: 1.1;
+    --text-quote-mobile--font-weight: 500;
+    --text-quote-mobile--letter-spacing: 0.05em;
+    --text-quote-mobile--font-feature-settings: "ss07" on;
+
+    --text-subtitle-desktop: 1.9rem;
+    --text-subtitle-desktop--line-height: 1.1;
+    --text-subtitle-desktop--font-weight: 400;
+    --text-subtitle-desktop--letter-spacing: 0.03em;
+    --text-subtitle-desktop--font-feature-settings: "ss07" on;
+
+    --text-subtitle-mobile: 1.5rem;
+    --text-subtitle-mobile--line-height: 1.1;
+    --text-subtitle-mobile--font-weight: 400;
+    --text-subtitle-mobile--letter-spacing: 0em;
+    --text-subtitle-mobile--font-feature-settings: "ss07" on;
+
+    --text-credits: 1.1rem;
+    --text-credits--line-height: 1.2;
+    --text-credits--font-weight: 500;
+    --text-credits--letter-spacing: 0.03em;
+    --text-credits--font-feature-settings: "ss07" on;
+
+    --spacing: 0.1rem;
+    --spacing-gutter: 3rem;
+
+    --breakpoint-2xl: 90rem; /* 1440px */
+
+    --masking-edge-gradient: linear-gradient(
+        to bottom,
+        transparent,
+        transparent 130px,
+        black 200px,
+        black calc(100% - 150px),
+        transparent calc(100% - 54px),
+        transparent
+    );
+}
+
+@layer base {
+    html {
+        font-size: 62.5%;
+        background-color: var(--color-black);
+        color: var(--color-white);
+    }
+
+    body {
+        @apply text-body;
+        font-family: var(--font-lausanne);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    button {
+        cursor: pointer;
+    }
+}
+
+@layer components {
+    .text-nav {
+        @apply text-nav-mobile md:text-nav-desktop;
+    }
+    .text-caption {
+        @apply text-caption-mobile md:text-caption-desktop uppercase;
+    }
+    .text-quote {
+        @apply text-quote-mobile md:text-quote-desktop font-giga italic;
+    }
+    .text-subtitle {
+        @apply text-subtitle-mobile md:text-subtitle-desktop font-giga;
+    }
+    .text-nav-kh {
+        @apply text-nav-kh-mobile md:text-nav-kh-desktop font-giga;
+    }
+
+    /* Sections */
+    .sections-wrapper {
+        @apply flex flex-col gap-50 md:gap-70;
+    }
+    .wysiwyg-content {
+        @apply [&_a]:underline;
+    }
+    .indented-content {
+        @apply [&_a]:underline [&_p:not(:first-child)]:indent-[calc(1/6*100%)] md:[&_p:not(:first-child)]:indent-[calc(1/10*100%)] lg:[&_p:not(:first-child)]:indent-[calc(1/8*100%)];
+    }
+    .wysiwyg-content {
+        @apply [&_h4]:text-caption-mobile [&_h4]:md:text-caption-desktop [&_a]:underline [&_h2]:my-35 [&_h2]:underline [&_h2:first-child]:mt-0 [&_h2:last-child]:mb-0 [&_h3]:my-14 [&_h3:first-child]:mt-0 [&_h3:last-child]:mb-0 [&_h4]:my-14 [&_h4]:uppercase [&_h4:first-child]:mt-0 [&_h4:last-child]:mb-0;
+    }
+}
+
+@layer utilities {
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}

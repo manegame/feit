@@ -1,0 +1,38 @@
+---
+import Basic from "../pages/Basic.astro";
+import Director from "../pages/Director.astro";
+import DirectorsPage from "../pages/DirectorsPage.astro";
+import NewsHome from "../pages/NewsHome.astro";
+import NewsSingle from "../pages/NewsSingle.astro";
+import Video from "../pages/Video.astro";
+import Work from "../pages/Work.astro";
+import NotFound from "../pages/404.astro";
+
+const TEMPLATE_BY_MODELAPIKEY: Record<string, Function> = {
+    directors_page: DirectorsPage,
+    director: Director,
+    video: Video,
+    work: Work,
+    basic: Basic,
+    news_home: NewsHome,
+    news_single: NewsSingle,
+} as const;
+
+const DEFAULT_TEMPLATE = NotFound;
+
+const props = Astro.props;
+
+const template = TEMPLATE_BY_MODELAPIKEY[props.data._modelApiKey];
+
+if (!template) {
+    console.warn(
+        `No template found for modelApiKey: ${props.data._modelApiKey}. Using default template.`,
+    );
+}
+
+const PageTemplate = template || DEFAULT_TEMPLATE;
+---
+
+<div id="page" class="page min-h-dvh" data-template={props.data._modelApiKey}>
+    <PageTemplate {...props} />
+</div>

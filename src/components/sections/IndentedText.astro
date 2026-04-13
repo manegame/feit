@@ -1,0 +1,7 @@
+---
+const { data } = Astro.props;
+---
+
+<section class="section-indented-text">
+    <div class="text-nav indented-content" set:html={data.text} />
+</section>

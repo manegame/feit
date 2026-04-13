@@ -1,0 +1,177 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { getDataFromRSS } from "../../utils/wiredrive";
+
+import DatoImage from "../global/DatoImage.astro";
+import VideoItem from "../director/VideoItem.astro";
+
+const { data } = Astro.props;
+
+const showcase = await getDataFromRSS(data.showcaseRss);
+
+data.showcase = showcase;
+
+const videoPromises: Promise<any>[] = [];
+
+data.videos.forEach((video: any) => {
+    if (video.previewRss) {
+        const rssPromise = getDataFromRSS(video.previewRss).then((preview) => {
+            video.preview = preview;
+            return preview;
+        });
+        videoPromises.push(rssPromise);
+    }
+});
+await Promise.all(videoPromises);
+
+const videos = [...data.videos];
+---
+
+<div
+    id="director"
+    data-back="/"
+    class="relative h-dvh overflow-hidden md:overflow-y-auto"
+    style={{ "--director-color": data.color.hex }}
+>
+    <div class="absolute inset-0">
+        <video
+            id="director-background-video"
+            class="size-full object-cover"
+            autoplay
+            muted
+            loop
+            playsinline
+            poster={data.showcase.poster?.url}
+            src={data.showcase.video?.url}
+        >
+        </video>
+    </div>
+
+    <div id="director-overlay" class="absolute inset-0 cursor-pointer bg-black opacity-85"></div>
+
+    <div
+        id="director-banner"
+        data-lenis-prevent
+        class="relative z-10 max-h-full w-full overflow-hidden bg-(--director-color) text-black"
+        data-selected="work"
+    >
+        <button id="director-close-btn" class="right-gutter absolute top-30">
+            <Icon name="cross" class="size-12" />
+        </button>
+        <div class="h-auto pt-30">
+            <div class="flex h-full flex-col overflow-y-scroll md:overflow-y-visible">
+                <div class="px-gutter mb-35 flex shrink-0 flex-col items-start gap-2 md:hidden">
+                    <button
+                        id="director-work-btn"
+                        class="opacity-20 in-data-[selected='work']:opacity-100"
+                    >
+                        Selected Work
+                    </button>
+                    <button
+                        id="director-bio-btn"
+                        class="opacity-20 in-data-[selected='bio']:opacity-100"
+                    >
+                        Biography
+                    </button>
+                </div>
+
+                <div
+                    class="px-gutter flex flex-row grow items-start justify-between overflow-hidden md:overflow-visible md:flex-row-reverse md:items-stretch lg:justify-start"
+                >
+                    <div class="hidden w-3/12 flex-col pb-30 md:flex lg:w-2/12 xl:w-3/24">
+                        {
+                            data.sidebar.map((item: any) => (
+                                <div class="mb-15 first:mb-auto last:mb-0">
+                                    {item.title && (
+                                        <div class="text-caption mb-5">{item.title}</div>
+                                    )}
+                                    {item.items.map((subitem: any) => {
+                                        if (subitem.pdf) {
+                                            return (
+                                                <a
+                                                    class="flex items-center gap-4"
+                                                    target="_blank"
+                                                    href={subitem.pdf.url}
+                                                >
+                                                    <span>download</span>
+                                                    <Icon
+                                                        name="download"
+                                                        class="h-11 w-9 flex-none"
+                                                    />
+                                                </a>
+                                            );
+                                        } else if (subitem.link) {
+                                            return (
+                                                <a target="_blank" href={subitem.link}>
+                                                    {subitem.label}
+                                                </a>
+                                            );
+                                        } else {
+                                            return <div>{subitem.label}</div>;
+                                        }
+                                    })}
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <div class="relative mb-20 h-full md:-mt-36 w-8/12 md:mb-30 md:h-365 md:w-5/12 lg:mr-[12.5%] lg:ml-auto 2xl:w-6/24">
+                        <div
+                            class="block pointer-events-none absolute bottom-0 left-0 w-full h-36"
+                            style={`background: linear-gradient(to top, ${data.color.hex} 0%, transparent 100%);`}
+                        ></div>
+                        <div
+                            class="md:block hidden pointer-events-none absolute top-0 left-0 w-full h-46"
+                            style={`background: linear-gradient(to bottom, ${data.color.hex} 30%, transparent 90%);`}
+                        ></div>
+                        <div
+                            class="scrollbar-hide h-full w-full overflow-y-auto md:pb-18 max-h-[80vh] md:max-h-none"
+                        >
+                            <div class="md:block hidden h-36"></div>
+                            <div
+                                class="scrollbar-hide hidden w-full overflow-y-auto md:overflow-y-visible in-data-[selected='work']:block md:mb-20 md:block [&>p+p]:mt-20"
+                                set:html={data.introduction}
+                            />
+                            <div
+                                class="scrollbar-hide hidden w-full overflow-y-auto md:overflow-y-visible in-data-[selected='bio']:block md:block [&>p+p]:mt-20"
+                                set:html={data.biography}
+                            />
+                            <div class="block md:hidden h-36"></div>
+                        </div>
+                    </div>
+                    <div
+                        class="flex w-3/12 flex-col items-end justify-between pb-30 md:w-2/12 md:items-start xl:w-1/12"
+                    >
+                        <div class="hidden md:block">{data.name}</div>
+                        <div class="w-full">
+                            <div class="aspect-77/100 w-full max-w-120 md:max-w-150">
+                                {
+                                    data.photo?.responsiveImage && (
+                                        <DatoImage
+                                            pictureClass="block size-full object-cover object-[var(--focal-x)_var(--focal-y))]"
+                                            imgClass="size-full object-cover object-[var(--focal-x)_var(--focal-y))]"
+                                            focalPoint={data.photo.focalPoint}
+                                            data={data.photo.responsiveImage}
+                                        />
+                                    )
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="group scrollbar-hide mb-5 hidden w-full shrink-0 overflow-hidden in-data-[selected='work']:flex md:mb-0 md:flex"
+                    id="director-slider-parent"
+                >
+                    <div
+                        class="px-gutter flex gap-5 md:gap-0 md:px-0"
+                        id="director-slider"
+                        data-dragging="false"
+                    >
+                        {videos.map((video: any) => <VideoItem video={video} />)}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

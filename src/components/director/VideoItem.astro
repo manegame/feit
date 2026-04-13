@@ -1,0 +1,61 @@
+---
+import DatoLink from "../global/DatoLink.astro";
+
+const { video } = Astro.props;
+---
+
+<DatoLink
+    class:list={[
+        "relative flex w-[40vw] shrink-0 flex-col justify-between gap-5 select-none in-data-[dragging='true']:pointer-events-none md:w-[22vw] md:max-w-400",
+        "md:hover:[&_.overlay]:opacity-0 md:hover:[&_.video-poster]:opacity-0 md:hover:[&_.video-text]:translate-y-0 md:hover:[&_.video-text]:opacity-100",
+    ]}
+    link={{ internalLink: video }}
+>
+    <div
+        class="text-caption flex flex-col gap-2 md:absolute md:inset-0 md:z-2 md:justify-center md:px-15 md:text-white"
+    >
+        <div
+            class="video-text transition-all duration-300 ease-in-out md:translate-y-20 md:opacity-0"
+        >
+            &#8216;{video.name}&#8217;
+        </div>
+        <div
+            class="video-text transition-all delay-50 duration-300 ease-in-out md:translate-y-20 md:opacity-0"
+            >{video.client}</div
+        >
+    </div>
+    <div class="relative aspect-16/10 w-full">
+        <div
+            class="overlay absolute inset-0 z-3 bg-black opacity-0 transition-opacity duration-300 ease-in-out md:group-hover:opacity-50"
+        ></div>
+        <div class="absolute inset-0 z-1 bg-black opacity-40"></div>
+        <div class="absolute inset-0 hidden size-full overflow-hidden object-cover md:block">
+            <video
+                class="size-full scale-120"
+                autoplay
+                muted
+                loop
+                playsinline
+                poster={video.preview.poster?.url}
+                src={video.preview.video?.url}
+            >
+            </video>
+        </div>
+        <div
+            class="video-poster absolute inset-0 size-full overflow-hidden object-cover transition-opacity duration-300 ease-in-out"
+        >
+            <img class="size-full scale-120" src={video.preview.poster?.url} alt={video.name} />
+        </div>
+        {
+            video.awardIcon && video.awardIcon.length > 0 && (
+                <div class="absolute right-15 bottom-10 z-2 flex flex-wrap-reverse items-center justify-end gap-5">
+                    {video.awardIcon.map((icon: any) => (
+                        <div class="h-15 w-20 sm:h-25 sm:w-35">
+                            <img src={icon.url} alt={icon.alt} class="size-full object-contain" />
+                        </div>
+                    ))}
+                </div>
+            )
+        }
+    </div>
+</DatoLink>

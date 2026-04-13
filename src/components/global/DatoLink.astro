@@ -1,0 +1,55 @@
+---
+const { link, class: className = "", style = "", ...props } = Astro.props;
+
+const { label, externalLink, internalLink } = link;
+
+let linkUrl = "#";
+
+if (externalLink) {
+    linkUrl = externalLink;
+} else if (internalLink) {
+    const interlinkUrl = internalLink.slug ? `/${internalLink.slug}` : "/";
+    if (interlinkUrl) linkUrl = interlinkUrl;
+}
+
+// on build Astro add a trailing slash to the pathname
+let pathName = Astro.url.pathname;
+if (pathName !== "/" && pathName.endsWith("/")) pathName = pathName.slice(0, -1);
+
+const isExact = internalLink && linkUrl === pathName;
+
+let subnavItemIsCurrent = false;
+let internalSubnavSlugs;
+
+if (internalLink?.subnavigation) {
+    internalSubnavSlugs = internalLink.subnavigation.blocks.reduce((acc: any[], cur: any) => {
+        if (cur.links) {
+            const subnavLinks = cur.links
+                .filter((link: any) => link.internalLink && link.internalLink.slug)
+                .map((link: any) => `/${link.internalLink.slug}`);
+            acc.push(...subnavLinks);
+        }
+        return acc;
+    }, []);
+
+    subnavItemIsCurrent = internalSubnavSlugs.some((link: any) => link === pathName);
+}
+
+const target = link.externalLink ? "_blank" : "_self";
+---
+
+<a
+    style={style}
+    href={linkUrl}
+    draggable="false"
+    class:list={[
+        className,
+        { "link-current": isExact || subnavItemIsCurrent, "link-exact": isExact },
+    ]}
+    target={target}
+    data-template={internalLink?._modelApiKey}
+    data-subslugs={internalSubnavSlugs ? internalSubnavSlugs.join(",") : undefined}
+    {...props}
+>
+    <slot>{label}</slot>
+</a>

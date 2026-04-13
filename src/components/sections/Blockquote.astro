@@ -1,0 +1,15 @@
+---
+const { data } = Astro.props;
+---
+
+<section
+    class="section-blockquote flex flex-col gap-15 md:w-22/20 lg:w-10/8"
+>
+    <blockquote>
+        <p
+            class={`text-quote text-left text-pretty before:content-['“_'] after:content-['”']`}
+            >{data.text}</p
+        >
+    </blockquote>
+    {data.credits && <p class="text-credits text-[1.4rem] text-left whitespace-pre-line leading-[1.2]">{data.credits}</p>}
+</section>

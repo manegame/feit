@@ -1,0 +1,23 @@
+---
+import DatoImage from "../global/DatoImage.astro";
+
+const { data } = Astro.props;
+---
+
+<section class="section-images flex flex-col gap-5">
+    {
+        data.images.map((image: any) => (
+            <div class="w-full">
+                <DatoImage
+                    imgClass={data.displayTrueSize ? `mx-auto` : "w-full"}
+                    imgStyle={{
+                        width: data.displayTrueSize
+                            ? `${image.responsiveImage.width}px`
+                            : undefined,
+                    }}
+                    data={image.responsiveImage}
+                />
+            </div>
+        ))
+    }
+</section>

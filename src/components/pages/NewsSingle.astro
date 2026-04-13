@@ -1,0 +1,116 @@
+---
+import DatoImage from "../global/DatoImage.astro";
+import DatoLink from "../global/DatoLink.astro";
+import { Icon } from "astro-icon/components";
+
+import LeftRightTitle from "../news/LeftRightTitle.astro";
+import Details from "../news/Details.astro";
+import Section from "../global/Section.astro";
+import EdgeGradient from "../global/EdgeGradient.astro";
+
+const { data } = Astro.props;
+
+const aspectRatioClass =
+    {
+        square: "aspect-square lg:w-10/24",
+        classic: "aspect-[7/5] lg:w-14/24",
+        wide: "aspect-[9/5] lg:w-18/24",
+    }[data.coverSize as "square" | "classic" | "wide"] || "lg:aspect-square";
+
+// get next and prev news singles based on newsHome.news
+let prevArticleIndex = -1;
+let nextArticleIndex = -1;
+
+const currentIndex = data.newsHome.news.findIndex((n: any) => n.id === data.id);
+if (currentIndex >= 0) {
+    prevArticleIndex = (currentIndex - 1 + data.newsHome.news.length) % data.newsHome.news.length;
+    nextArticleIndex = (currentIndex + 1) % data.newsHome.news.length;
+}
+
+const prevArticle = data.newsHome.news[prevArticleIndex];
+const nextArticle = data.newsHome.news[nextArticleIndex];
+---
+
+<div class="px-gutter flex min-h-dvh items-center justify-center">
+    <div
+        id="article-content"
+        class="flex w-full flex-col items-center gap-25 pt-212 pb-80 lg:gap-35 lg:py-112"
+    >
+        <div class="flex w-full flex-col items-center gap-8 lg:gap-15">
+            <div class="w-10/12 sm:w-8/12 md:w-8/12 lg:w-6/24">
+                <div
+                    class="flex w-full flex-col gap-9 lg:gap-10"
+                    data-flip-id={`${data.id}-details`}
+                    transition:persist={`${data.id}-details`}
+                    data-details-id={data.id}
+                >
+                    <LeftRightTitle
+                        leftAlignedTitle={data.leftAlignedTitle}
+                        rightAlignedTitle={data.rightAlignedTitle}
+                    />
+                    <Details date={data.date} category={data.category.category} />
+                </div>
+            </div>
+            <div class={`w-full md:w-10/12 ${aspectRatioClass}`}>
+                <div
+                    class="relative size-full"
+                    data-flip-id={`${data.id}-image`}
+                    transition:persist={`${data.id}-image`}
+                    data-image-id={data.id}
+                >
+                    {
+                        data.cover && (
+                            <DatoImage
+                                data={data.cover.responsiveImage}
+                                imgClass="block absolute inset-0 size-full object-cover"
+                            />
+                        )
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="sections-wrapper md:w-10/12 lg:w-4/12">
+            {
+                Array.isArray(data.content) &&
+                    data.content.map((blok: any) => {
+                        return <Section data={blok} />;
+                    })
+            }
+        </div>
+    </div>
+    <div
+        class="px-gutter pointer-events-none fixed inset-0 z-1 flex items-center justify-center pb-30 lg:pb-0"
+    >
+        <div class="flex h-full w-full flex-col items-center justify-end lg:h-auto lg:flex-row">
+            <div class="text-nav pointer-events-auto flex items-center gap-10 overflow-hidden">
+                <DatoLink
+                    link={{ internalLink: data.newsHome }}
+                    class="article-nav-item flex shrink-0 items-center gap-5"
+                >
+                    <Icon name="cross" class="-mt-1 size-12" />
+                    Close
+                </DatoLink>
+
+                <DatoLink
+                    link={{ internalLink: prevArticle }}
+                    class="article-nav-item flex shrink-0 items-center gap-5"
+                >
+                    ← Prev
+                </DatoLink>
+
+                <DatoLink
+                    link={{ internalLink: nextArticle }}
+                    class="article-nav-item flex shrink-0 items-center gap-5"
+                >
+                    Next →
+                </DatoLink>
+                <button
+                    id="share-button"
+                    class="article-nav-item flex shrink-0 items-center gap-5 lg:hidden"
+                    >Share</button
+                >
+            </div>
+        </div>
+    </div>
+    <EdgeGradient top={0} topFade={0} />
+</div>

@@ -1,0 +1,156 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { getDataFromRSS } from "../../utils/wiredrive";
+import DatoLink from "../global/DatoLink.astro";
+
+const { data } = Astro.props;
+
+const video = await getDataFromRSS(data.videoRss);
+data.video = video;
+
+const directorsVideos = data.directors?.[0]?.videos || [];
+
+const getNextPrevVideos = (sourceVideos: any[]) => {
+    let prevVideoIndex = -1;
+    let nextVideoIndex = -1;
+
+    const currentIndex = sourceVideos.findIndex((v: any) => v.id === data.id);
+
+    if (currentIndex >= 0) {
+        prevVideoIndex = (currentIndex - 1 + sourceVideos.length) % sourceVideos.length;
+        nextVideoIndex = (currentIndex + 1) % sourceVideos.length;
+    }
+
+    return {
+        prevVideo: sourceVideos[prevVideoIndex],
+        nextVideo: sourceVideos[nextVideoIndex],
+    };
+};
+
+const { prevVideo, nextVideo } = getNextPrevVideos(directorsVideos);
+---
+
+<div id="video" class="relative h-dvh overflow-hidden">
+    <div id="video-video" class="absolute inset-0">
+        <video
+            class="h-full w-full object-contain"
+            muted
+            loop
+            playsinline
+            src={data.video.video?.url}
+            poster={data.video.poster?.url}
+        >
+        </video>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div
+                id="video-info"
+                class="relative z-1 flex flex-col items-center gap-5 overflow-hidden lg:flex-row lg:gap-15"
+            >
+                <div class="text-nav flex items-center gap-6 overflow-hidden">
+                    {
+                        data.externaldirectors ? (
+                            <div class="video-info">{data.externaldirectors}</div>
+                        ) : (
+                            data.directors.map((director: any) => (
+                                <DatoLink class="video-info" link={{ internalLink: director }}>
+                                    {director.name}
+                                </DatoLink>
+                            ))
+                        )
+                    }
+                </div>
+                <div class="text-nav-kh flex items-center gap-6">
+                    <div class="video-info">{data.name}</div>
+                    <div class="video-info italic">{data.client}</div>
+                </div>
+            </div>
+            <div id="overlay" class="absolute inset-0 bg-black opacity-40"></div>
+        </div>
+    </div>
+    <div
+        id="video-controls"
+        style={{ "--video-progress": 0 }}
+        class="px-gutter pointer-events-none absolute inset-0 flex items-center justify-center pb-80 lg:pb-0"
+    >
+        <div class="flex h-full w-full flex-col items-center justify-end lg:h-auto lg:flex-row">
+            <div class="text-nav pointer-events-auto flex items-center gap-10 overflow-hidden">
+                <DatoLink
+                    class="controls-item flex shrink-0 items-center gap-5"
+                    link={{ internalLink: data.directors?.[0] }}
+                >
+                    More ↓
+                </DatoLink>
+
+                <DatoLink
+                    id="prev-video-link"
+                    link={{ internalLink: prevVideo }}
+                    class="controls-item flex shrink-0 items-center gap-5"
+                >
+                    ← Prev
+                </DatoLink>
+
+                <DatoLink
+                    id="next-video-link"
+                    link={{ internalLink: nextVideo }}
+                    class="controls-item flex shrink-0 items-center gap-5"
+                >
+                    Next →
+                </DatoLink>
+                <DatoLink
+                    id="close-video-link"
+                    link={{ internalLink: { slug: undefined } }}
+                    class="controls-item flex shrink-0 items-center gap-5"
+                >
+                    <Icon name="cross" class="-mt-1 size-12" />
+                    Close
+                </DatoLink>
+            </div>
+        </div>
+        <div
+            id="video-player"
+            class="lg:px-gutter pointer-events-auto absolute right-0 bottom-0 left-0 flex flex-col pb-20 lg:flex-row-reverse lg:items-center lg:gap-12"
+        >
+            <div
+                class="relative mb-5 flex h-30 cursor-pointer items-center lg:mb-0 lg:flex-1"
+                id="video-timeline"
+            >
+                <div
+                    class="pointer-events-none absolute -top-16 left-0 w-full translate-x-[calc(100%*var(--video-progress))] pb-17"
+                >
+                    <div
+                        id="video-controls-time"
+                        class="hidden -translate-x-1/2 text-[1.2rem] font-medium tracking-[0.08em] uppercase tabular-nums lg:inline-block"
+                    >
+                        00:00
+                    </div>
+                </div>
+                <div class="h-2 w-full bg-white/10">
+                    <div class="size-full origin-left scale-x-(--video-progress) bg-white"></div>
+                </div>
+            </div>
+            <div class="flex justify-center gap-15 lg:gap-12">
+                <button id="btn-play" data-play="true" class="relative size-16 lg:size-14">
+                    <Icon
+                        name="play"
+                        class="absolute top-0 left-0 hidden size-16 in-data-[play=false]:block lg:size-14"
+                    />
+                    <Icon
+                        name="pause"
+                        class="absolute top-0 left-0 size-16 in-data-[play=false]:hidden lg:size-14"
+                    />
+                </button>
+                <button data-muted="true" id="btn-sound" class="relative size-16 lg:size-14">
+                    <Icon
+                        name="sound-on"
+                        class="absolute top-0 left-0 hidden size-16 in-data-[muted=false]:block lg:size-14"
+                    />
+                    <Icon
+                        name="sound-off"
+                        class="absolute top-0 left-0 size-16 in-data-[muted=false]:hidden lg:size-14"
+                    />
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

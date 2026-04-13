@@ -1,0 +1,20 @@
+---
+import DatoLink from "../global/DatoLink.astro";
+
+const { data } = Astro.props;
+---
+
+<section
+    class="section-links flex flex-col pl-[calc(1/6*100%)] md:pl-[calc(1/10*100%)] lg:pl-[calc(1/8*100%)]"
+>
+    {
+        data.links.map((link: any) => (
+            <div>
+                <DatoLink class="text-nav underline" link={link}>
+                    {link.label}
+                    {link.externalLink && " ↗"}
+                </DatoLink>
+            </div>
+        ))
+    }
+</section>
