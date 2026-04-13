@@ -18,38 +18,10 @@ data.videos.forEach((video: any) => {
     }
 });
 
-const GRID_COLS = 3;
+// Single column: each video is its own row
+const rows: number[][] = data.videos.map((_: any, index: number) => [index]);
 
-// Simulate grid layout to find rows and positions
-const rows: number[][] = [];
-let currentRow: number[] = [];
-let currentRowWeight = 0;
-
-data.videos.forEach((video: any, index: number) => {
-    const videoWeight = video.featured ? GRID_COLS : 1;
-
-    // If adding this video exceeds grid columns, start a new row
-    if (currentRowWeight + videoWeight > GRID_COLS) {
-        rows.push([...currentRow]);
-        currentRow = [index];
-        currentRowWeight = videoWeight;
-    } else {
-        currentRow.push(index);
-        currentRowWeight += videoWeight;
-    }
-});
-
-// Add the last row
-if (currentRow.length > 0) {
-    rows.push(currentRow);
-}
-
-// Find the center row
-const centerRowIndex = Math.floor(rows.length / 2);
-const centerRow = rows[centerRowIndex];
-
-// Find the center video in that row (middle position)
-let centerVideoIndex = centerRow[Math.floor(centerRow.length / 2)];
+const centerVideoIndex = Math.floor(data.videos.length / 2);
 
 await Promise.all(videosPromises);
 
@@ -72,7 +44,7 @@ const getNextVideoSlug = (index: number) => {
     >
         <div
             id="work-grid"
-            class="group pointer-events-none mx-auto grid w-full grid-cols-2 gap-x-20 gap-y-60 pt-200 pb-100 lg:w-18/24 lg:grid-cols-3 lg:gap-x-5 lg:gap-y-195 lg:pb-200"
+            class="group pointer-events-none mx-auto grid w-full grid-cols-1 gap-y-60 pt-200 pb-100 lg:w-18/24 lg:gap-y-195 lg:pb-200"
         >
             {
                 data.videos.map((video: any, index: number) => (
@@ -81,7 +53,6 @@ const getNextVideoSlug = (index: number) => {
                             "video-item pointer-events-auto relative col-span-1 block aspect-16/10 will-change-transform backface-hidden",
                             "lg:hover:[&_.overlay]:opacity-0 lg:hover:[&_.video-text]:opacity-100",
                             {
-                                "lg:col-span-3": video.featured,
                                 "center-video": index === centerVideoIndex,
                             },
                         ]}

@@ -174,7 +174,7 @@ export default class Director extends Page {
     transitionOut({ to }: { to: string }) {
         this.swapTl = gsap.timeline({ paused: true });
 
-        if (to === "directors_page" || to === "video") {
+        if (to === "directors_page" || to === "directors_page_feit" || to === "video") {
             this.swapTl.to(this.overlay, {
                 opacity: 0.4,
                 duration: 0.4,
@@ -208,6 +208,7 @@ export default class Director extends Page {
 
         if (
             this.previousPage?.template === "directors_page" ||
+            this.previousPage?.template === "directors_page_feit" ||
             this.previousPage?.template === "video"
         ) {
             gsap.set(overlay, { opacity: 0.4 });

@@ -418,7 +418,7 @@ export default class DirectorsPage extends Page {
 
         this.swapTl = gsap.timeline({ paused: true });
 
-        if (to === "work") {
+        if (to === "work" || to === "work_feit") {
             this.swapTl.to(this.list, {
                 opacity: 0,
                 duration: 0.4,

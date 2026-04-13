@@ -11,12 +11,14 @@ const DEFAULT_PAGE = Page;
 
 const PAGE_BY_TEMPLATE: Record<string, typeof Page> = {
     directors_page: DirectorsPage,
+    directors_page_feit: DirectorsPage,
     director: Director,
     video: Video,
     news_home: NewsHome,
     news_single: NewsSingle,
     basic: Basic,
     work: Work,
+    work_feit: Work,
 };
 
 export const getPageClass = (template: string) => {

@@ -12,7 +12,7 @@ import navigation from "./layout/navigation";
 
 export default `
     query AllPagesAndLayout {
-        directorsPage {
+        directorsPageFeit {
             ${directorsPage}
         }
         allDirectors(first: 500) {
@@ -21,7 +21,7 @@ export default `
         allVideos(first: 500) {
             ${video}
         }
-        allWorks {
+        allWorkFeits {
             ${works}
         }
         newsHome {

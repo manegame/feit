@@ -73,14 +73,20 @@ export const isDraft = () => {
     );
 };
 
+const SLUG_REVERSE_REWRITES: Record<string, string> = {
+    "work": "work-feit",
+};
+
 export const getPageBySlugAndLayout = async (slug: string | undefined) => {
     const isDirectorsPage = slug === "" || slug === null || slug === undefined;
 
+    const querySlug = slug ? (SLUG_REVERSE_REWRITES[slug] || slug) : slug;
+
     const query = isDirectorsPage
         ? directorsPageAndLayout
-        : pageBySlugAndLayout(slug);
+        : pageBySlugAndLayout(querySlug);
 
-    const data = await excecuteQuery(query, { slug });
+    const data = await excecuteQuery(query, { slug: querySlug });
 
     const { navigation, ...pageData } = data;
 
@@ -162,6 +168,12 @@ export const pagesSlugToModelApiKeyMap = (pagesData: any) => {
     return slugMap;
 };
 
+const SLUG_REWRITES: Record<string, string> = {
+    "work-feit": "work",
+};
+
+const rewriteSlug = (slug: string) => SLUG_REWRITES[slug] || slug;
+
 export const pagesDataToSlugMap = (pagesData: any) => {
     const slugMap = Object.values(pagesData).reduce(
         (acc: { [key: string]: any }, page) => {
@@ -172,7 +184,8 @@ export const pagesDataToSlugMap = (pagesData: any) => {
             if (pageIsSingle) page = [page];
 
             (page as any[]).forEach((p: any) => {
-                acc[p.slug] = p;
+                const slug = rewriteSlug(p.slug);
+                acc[slug] = { ...p, slug };
             });
 
             return acc;

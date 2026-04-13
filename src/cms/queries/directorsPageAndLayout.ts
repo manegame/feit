@@ -6,7 +6,7 @@ import navigation from "./layout/navigation";
 
 export default `
     query directorsPageAndLayout {
-        directorsPage {
+        directorsPageFeit {
             ${directorsPage}
         }
         navigation {

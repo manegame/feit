@@ -23,7 +23,7 @@ export default function (slug: string): string {
             allVideos(first: 500, filter: { slug: { eq: $slug }}) {
                 ${video}
             }
-            allWorks(filter: { slug: { eq: $slug }}) {
+            allWorkFeits(filter: { slug: { eq: $slug }}) {
                 ${works}
             }
             newsHome(filter: { slug: { eq: $slug }}) {

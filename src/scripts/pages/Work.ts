@@ -127,7 +127,7 @@ export default class Work extends Page {
 
     prepareTransitionIn(sourceElement?: HTMLElement): void {
         if (
-            this.previousPage?.template !== "directors_page" ||
+            (this.previousPage?.template !== "directors_page" && this.previousPage?.template !== "directors_page_feit") ||
             window.innerWidth < 1024
         ) {
             // remove posters
@@ -165,7 +165,7 @@ export default class Work extends Page {
 
         if (
             this.enableCenterVideoTransition &&
-            this.previousPage?.template === "directors_page" &&
+            (this.previousPage?.template === "directors_page" || this.previousPage?.template === "directors_page_feit") &&
             window.innerWidth >= 1024
         ) {
             this.setupInitialScroll();
