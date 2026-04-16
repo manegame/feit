@@ -1,4 +1,5 @@
 import DirectorsPage from "./Directors";
+import DirectorsGridPage from "./DirectorsGrid";
 import Director from "./Director";
 import Page from "./Page";
 import Video from "./Video";
@@ -12,6 +13,7 @@ const DEFAULT_PAGE = Page;
 const PAGE_BY_TEMPLATE: Record<string, typeof Page> = {
     directors_page: DirectorsPage,
     directors_page_feit: DirectorsPage,
+    directors_grid: DirectorsGridPage,
     director: Director,
     video: Video,
     news_home: NewsHome,

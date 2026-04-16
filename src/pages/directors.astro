@@ -1,0 +1,25 @@
+---
+import { getAllPagesAndLayout, pagesSlugToModelApiKeyMap } from "../cms/dato";
+
+import Layout from "../layouts/Layout.astro";
+import DirectorsGridPage from "../components/pages/DirectorsGridPage.astro";
+
+const allData = await getAllPagesAndLayout();
+
+const directorsPage = Object.values(allData.pages).find(
+    (p: any) => p._modelApiKey === "directors_page_feit",
+) as any;
+
+const slugToModelApiKeyMap = pagesSlugToModelApiKeyMap(allData.pages);
+---
+
+<Layout
+    layout={allData.layout}
+    slugToModelApiKeyMap={slugToModelApiKeyMap}
+    template="directors_grid"
+    seoMetaTags={directorsPage?._seoMetaTags}
+>
+    <div id="page" class="page min-h-dvh" data-template="directors_grid">
+        <DirectorsGridPage data={directorsPage} />
+    </div>
+</Layout>

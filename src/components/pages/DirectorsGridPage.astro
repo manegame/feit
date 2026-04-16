@@ -1,0 +1,77 @@
+---
+import DatoLink from "../global/DatoLink.astro";
+
+import { getDataFromRSS } from "../../utils/wiredrive";
+
+const { data } = Astro.props;
+
+const directors = data.directors || [];
+
+const rssVideoPromises: Promise<{ video: any; poster: any }>[] = [];
+
+directors.forEach((director: any) => {
+    if (director.showcaseRss) {
+        const rssPromise = getDataFromRSS(director.showcaseRss).then((showcase) => {
+            director.showcase = showcase;
+            return showcase;
+        });
+        rssVideoPromises.push(rssPromise);
+    }
+});
+await Promise.all(rssVideoPromises);
+
+// Split directors into 3 columns (round-robin)
+const col0 = directors.filter((_: any, i: number) => i % 3 === 0);
+const col1 = directors.filter((_: any, i: number) => i % 3 === 1);
+const col2 = directors.filter((_: any, i: number) => i % 3 === 2);
+const columns = [col0, col1, col2];
+---
+
+<div
+    id="directors-grid-page"
+    class="relative h-dvh overflow-hidden select-none"
+>
+    <div class="absolute inset-0 z-1 flex items-center justify-center">
+        <div class="text-nav flex w-full max-w-[900px] justify-center gap-30 px-20 lg:gap-40">
+            {
+                columns.map((col) => (
+                    <div class="flex flex-col items-center gap-6 lg:gap-8">
+                        {col.map((director) => (
+                            <div
+                                data-video={director.showcase?.video?.url}
+                                data-poster={director.showcase?.poster?.url}
+                                data-slug={director.slug}
+                                data-director={director.name}
+                                class="directors-grid-item"
+                            >
+                                <DatoLink class="relative" link={{ internalLink: director }}>
+                                    <span class="opacity-60 transition-opacity duration-200 hover:opacity-100">
+                                        {director.name}
+                                    </span>
+                                </DatoLink>
+                            </div>
+                        ))}
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+
+    <div
+        id="directors-grid-preview"
+        class="pointer-events-none fixed z-50 hidden h-[180px] w-[280px] overflow-hidden"
+    >
+        <video
+            id="directors-grid-preview-video"
+            class="h-full w-full object-cover"
+            muted
+            loop
+            playsinline
+        ></video>
+        <img
+            id="directors-grid-preview-poster"
+            class="absolute inset-0 h-full w-full object-cover"
+            alt=""
+        />
+    </div>
+</div>

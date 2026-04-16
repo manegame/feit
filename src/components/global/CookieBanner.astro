@@ -76,6 +76,12 @@
                 el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
                 el.style.translate = "0 -100%";
             });
+            setTimeout(function () {
+                var mobile = document.getElementById("cookie-banner-mobile");
+                var desktop = document.getElementById("cookie-banner-desktop");
+                if (mobile) mobile.style.display = "none";
+                if (desktop) desktop.style.display = "none";
+            }, 450);
         }
 
         var consent = localStorage.getItem(CONSENT_KEY);

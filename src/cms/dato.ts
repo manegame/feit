@@ -76,7 +76,7 @@ export const isDraft = () => {
 };
 
 const SLUG_REVERSE_REWRITES: Record<string, string> = {
-    "work": "work-feit",
+    "work": "work-ch",
 };
 
 export const getPageBySlugAndLayout = async (slug: string | undefined) => {
@@ -167,11 +167,13 @@ export const pagesSlugToModelApiKeyMap = (pagesData: any) => {
         {},
     );
 
+    slugMap["directors"] = "directors_grid";
+
     return slugMap;
 };
 
 const SLUG_REWRITES: Record<string, string> = {
-    "work-feit": "work",
+    "work-ch": "work",
 };
 
 const rewriteSlug = (slug: string) => SLUG_REWRITES[slug] || slug;

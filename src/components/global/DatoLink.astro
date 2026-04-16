@@ -5,8 +5,12 @@ const { label, externalLink, internalLink } = link;
 
 let linkUrl = "#";
 
+const isDirectorsPageLink = internalLink?._modelApiKey === "directors_page";
+
 if (externalLink) {
     linkUrl = externalLink;
+} else if (isDirectorsPageLink) {
+    linkUrl = "/directors";
 } else if (internalLink) {
     const interlinkUrl = internalLink.slug ? `/${internalLink.slug}` : "/";
     if (interlinkUrl) linkUrl = interlinkUrl;
@@ -36,6 +40,9 @@ if (internalLink?.subnavigation) {
 }
 
 const target = link.externalLink ? "_blank" : "_self";
+const template = isDirectorsPageLink
+    ? "directors_grid"
+    : internalLink?._modelApiKey;
 ---
 
 <a
@@ -47,7 +54,7 @@ const target = link.externalLink ? "_blank" : "_self";
         { "link-current": isExact || subnavItemIsCurrent, "link-exact": isExact },
     ]}
     target={target}
-    data-template={internalLink?._modelApiKey}
+    data-template={template}
     data-subslugs={internalSubnavSlugs ? internalSubnavSlugs.join(",") : undefined}
     {...props}
 >
