@@ -1,6 +1,6 @@
 ---
 import DatoLink from "./DatoLink.astro";
-import Logo from "./Logo.astro";
+import LogoBoth from "./LogoBoth.astro";
 
 const { data, template } = Astro.props;
 
@@ -18,21 +18,28 @@ const initialHide = TEMPLATES_WITH_HIDDEN_NAVIGATION.includes(template);
 >
     <header class="flex h-full w-full flex-col items-center justify-between lg:h-auto lg:flex-row">
         <a href="/" class="pointer-events-auto w-80 lg:h-auto lg:w-2/24">
-            <img src="/logo-switzerland.png" alt="Zauberberg Switzerland"  >
-            <!-- <Logo class="w-full" /> -->
+            <LogoBoth class="w-full" />
         </a>
         <div
             style={{ "pointer-events": initialHide ? "none" : "auto" }}
             class="navigation-items-wrapper pointer-events-auto flex items-center overflow-hidden"
         >
             {
-                data.links.map((link: any) => (
-                    <DatoLink
-                        style={{ transform: initialHide ? "translateY(-100%)" : "translateY(0)" }}
-                        class="text-nav-mobile navigation-item xl:text-nav-desktop block px-5 py-10 opacity-30 transition-opacity duration-150 hover:opacity-100 [&.link-current]:opacity-100"
-                        link={link}
-                    />
-                ))
+                data.links.map((link: any) => {
+                    const isDirectorsGridLink =
+                        link.internalLink?._modelApiKey === "directors_page" ||
+                        link.internalLink?._modelApiKey === "directors_page_feit";
+                    return (
+                        <DatoLink
+                            style={{ transform: initialHide ? "translateY(-100%)" : "translateY(0)" }}
+                            class:list={[
+                                "text-nav-mobile navigation-item xl:text-nav-desktop block px-5 py-10 opacity-30 transition-opacity duration-150 hover:opacity-100 [&.link-current]:opacity-100",
+                                { "max-lg:hidden": isDirectorsGridLink },
+                            ]}
+                            link={link}
+                        />
+                    );
+                })
             }
         </div>
     </header>

@@ -4,6 +4,7 @@ import SwapManager from "./SwapManager";
 import Scroll from "./Scroll";
 
 import { getPage } from "./pages";
+import { initPageSwipeNavigation } from "./utils/swipeNavigation";
 
 import type Page from "./pages/Page";
 
@@ -56,6 +57,7 @@ export default class Zauberberg {
         this.page?.init();
         this.debugGrid.init();
         this.setupResize();
+        initPageSwipeNavigation();
         this.initialized = true;
 
         await this.loader.end();
