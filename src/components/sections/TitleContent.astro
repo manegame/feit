@@ -1,13 +1,22 @@
 ---
+import DatoImage from "../global/DatoImage.astro";
+
 const { data } = Astro.props;
 ---
 
 <section class="section-title-content flex flex-col gap-25 md:gap-35">
     {
-        data.items.map((item: { title: string; content: string }) => (
+        data.items.map((item: any) => (
             <div class="flex flex-col gap-8">
-                <p class="text-caption">{item.title}</p>
-                <div class="text-nav wysiwyg-content" set:html={item.content} />
+                {item.title && <p class="text-caption">{item.title}</p>}
+                {item.content && (
+                    <div class="text-nav wysiwyg-content" set:html={item.content} />
+                )}
+                {item.image?.responsiveImage && (
+                    <div class="w-full">
+                        <DatoImage imgClass="w-full" data={item.image.responsiveImage} />
+                    </div>
+                )}
             </div>
         ))
     }

@@ -33,8 +33,22 @@ export default `
         _modelApiKey
         id
         items {
-            title
-            content
+            __typename
+            ... on TitleContentItemRecord {
+                _modelApiKey
+                id
+                title
+                content
+            }
+            ... on TitleContentItemImageRecord {
+                _modelApiKey
+                id
+                title
+                content
+                image {
+                    ${responsiveImg}
+                }
+            }
         }
     }
     ... on TwoColsModuleRecord {

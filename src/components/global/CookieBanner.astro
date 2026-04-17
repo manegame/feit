@@ -86,10 +86,12 @@
 
         var consent = localStorage.getItem(CONSENT_KEY);
 
-        if (consent === "granted") {
-            updateGTMConsent("granted");
-        } else if (consent === "denied") {
-            updateGTMConsent("denied");
+        if (consent === "granted" || consent === "denied") {
+            updateGTMConsent(consent);
+            var mobile = document.getElementById("cookie-banner-mobile");
+            var desktop = document.getElementById("cookie-banner-desktop");
+            if (mobile) mobile.style.display = "none";
+            if (desktop) desktop.style.display = "none";
         } else {
             setTimeout(showBanner, 1000);
         }

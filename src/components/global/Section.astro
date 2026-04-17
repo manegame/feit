@@ -4,6 +4,7 @@ import EmbedVideo from "../sections/EmbedVideo.astro";
 import Images from "../sections/Images.astro";
 import IndentedText from "../sections/IndentedText.astro";
 import Links from "../sections/Links.astro";
+import TextImage from "../sections/TextImage.astro";
 import TitleContent from "../sections/TitleContent.astro";
 import TwoCols from "../sections/TwoCols.astro";
 import Wysiwyg from "../sections/Wysiwyg.astro";
@@ -14,6 +15,7 @@ const SECTION_BY_MODELAPIKEY: Record<string, Function> = {
     images_module: Images,
     indented_text_module: IndentedText,
     links_module: Links,
+    text_image_module: TextImage,
     title_content_module: TitleContent,
     two_cols_module: TwoCols,
     wysiwyg_module: Wysiwyg,
