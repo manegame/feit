@@ -30,7 +30,7 @@ export default `
         allNewsSingles(first: 500) {
             ${newsSingle}
         }
-        allBasics(first: 50) {
+        allBasicChes(first: 50) {
             ${basic}
         }
         

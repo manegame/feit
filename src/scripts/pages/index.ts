@@ -19,6 +19,7 @@ const PAGE_BY_TEMPLATE: Record<string, typeof Page> = {
     news_home: NewsHome,
     news_single: NewsSingle,
     basic: Basic,
+    basic_ch: Basic,
     work: Work,
     work_feit: Work,
 };

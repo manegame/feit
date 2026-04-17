@@ -95,7 +95,8 @@ export default class Basic extends Page {
         this.swapTl = gsap.timeline({ paused: true });
 
         const nextHasSameSubnav =
-            to === "basic" && sourceElement.closest("#subnavigation");
+            (to === "basic" || to === "basic_ch") &&
+            sourceElement.closest("#subnavigation");
 
         if (nextHasSameSubnav) {
             this.swapTl.to(this.subnavigation, {

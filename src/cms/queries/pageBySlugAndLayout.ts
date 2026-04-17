@@ -32,7 +32,7 @@ export default function (slug: string): string {
             allNewsSingles(first: 500, filter: { slug: { eq: $slug }}) {
                 ${newsSingle}
             }
-            allBasics(first: 50, filter: { slug: { eq: $slug }}) {
+            allBasicChes(first: 50, filter: { slug: { eq: $slug }}) {
                 ${basic}
             }
             
