@@ -109,19 +109,25 @@ export default class Page {
 
     updateHeaderActiveItem(navigation: HTMLElement) {
         const items = navigation.querySelectorAll(".navigation-item");
+        const isMobile = window.matchMedia("(max-width: 1023px)").matches;
 
         items.forEach((item) => {
             const src = item.getAttribute("href");
             const subslugs =
                 item.getAttribute("data-subslugs")?.split(",") || [];
+            const isDirectorsGridLink = item.hasAttribute(
+                "data-directors-grid-link",
+            );
             const currentPath = window.location.pathname;
 
             const isCurrent = src === currentPath;
             const isSubslugCurrent = subslugs.some(
                 (slug) => slug === currentPath,
             );
+            const isDirectorsOnMobileHome =
+                isMobile && isDirectorsGridLink && currentPath === "/";
 
-            if (isCurrent || isSubslugCurrent) {
+            if (isCurrent || isSubslugCurrent || isDirectorsOnMobileHome) {
                 item.classList.add("link-current");
             } else {
                 item.classList.remove("link-current");

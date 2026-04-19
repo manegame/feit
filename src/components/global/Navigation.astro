@@ -32,10 +32,8 @@ const initialHide = TEMPLATES_WITH_HIDDEN_NAVIGATION.includes(template);
                     return (
                         <DatoLink
                             style={{ transform: initialHide ? "translateY(-100%)" : "translateY(0)" }}
-                            class:list={[
-                                "text-nav-mobile navigation-item xl:text-nav-desktop block px-5 py-10 opacity-30 transition-opacity duration-150 hover:opacity-100 [&.link-current]:opacity-100",
-                                { "max-lg:hidden": isDirectorsGridLink },
-                            ]}
+                            class="text-nav-mobile navigation-item xl:text-nav-desktop block px-5 py-10 opacity-30 transition-opacity duration-150 hover:opacity-100 [&.link-current]:opacity-100"
+                            data-directors-grid-link={isDirectorsGridLink ? "true" : undefined}
                             link={link}
                         />
                     );

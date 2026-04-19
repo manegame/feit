@@ -1,0 +1,16 @@
+---
+import DatoImage from "../global/DatoImage.astro";
+
+const { data } = Astro.props;
+---
+
+<section class="section-text-image grid gap-25 md:gap-35 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
+    <div class="text-nav wysiwyg-content" set:html={data.text} />
+    {
+        data.image?.responsiveImage && (
+            <div class="w-full">
+                <DatoImage imgClass="w-full" data={data.image.responsiveImage} />
+            </div>
+        )
+    }
+</section>

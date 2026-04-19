@@ -46,70 +46,76 @@
 </div>
 
 <script is:inline>
-    (function () {
-        var CONSENT_KEY = "cookie_consent";
+  const checkCookieBanner = () => {
+    console.log("cookies being checked")
+    var CONSENT_KEY = "cookie_consent";
 
-        function updateGTMConsent(value) {
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-                window.dataLayer.push(arguments);
-            }
-            gtag("consent", "update", {
-                analytics_storage: value,
-                ad_storage: value,
-                ad_user_data: value,
-                ad_personalization: value,
-            });
+    function updateGTMConsent(value) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            window.dataLayer.push(arguments);
         }
+        gtag("consent", "update", {
+            analytics_storage: value,
+            ad_storage: value,
+            ad_user_data: value,
+            ad_personalization: value,
+        });
+    }
 
-        function showBanner() {
-            var items = document.querySelectorAll(".cookie-text");
-            items.forEach(function (el) {
-                el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
-                el.style.translate = "0 0%";
-            });
-        }
+    function showBanner() {
+        var items = document.querySelectorAll(".cookie-text");
+        items.forEach(function (el) {
+            el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
+            el.style.translate = "0 0%";
+        });
+    }
 
-        function hideBanner() {
-            var items = document.querySelectorAll(".cookie-text");
-            items.forEach(function (el) {
-                el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
-                el.style.translate = "0 -100%";
-            });
-            setTimeout(function () {
-                var mobile = document.getElementById("cookie-banner-mobile");
-                var desktop = document.getElementById("cookie-banner-desktop");
-                if (mobile) mobile.style.display = "none";
-                if (desktop) desktop.style.display = "none";
-            }, 450);
-        }
-
-        var consent = localStorage.getItem(CONSENT_KEY);
-
-        if (consent === "granted" || consent === "denied") {
-            updateGTMConsent(consent);
+    function hideBanner() {
+        var items = document.querySelectorAll(".cookie-text");
+        items.forEach(function (el) {
+            el.style.transition = "translate 0.4s cubic-bezier(0.33, 1, 0.68, 1)";
+            el.style.translate = "0 -100%";
+        });
+        setTimeout(function () {
             var mobile = document.getElementById("cookie-banner-mobile");
             var desktop = document.getElementById("cookie-banner-desktop");
             if (mobile) mobile.style.display = "none";
             if (desktop) desktop.style.display = "none";
-        } else {
-            setTimeout(showBanner, 1000);
-        }
+        }, 450);
+    }
 
-        document.querySelectorAll(".cookie-btn-accept").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                localStorage.setItem(CONSENT_KEY, "granted");
-                updateGTMConsent("granted");
-                hideBanner();
-            });
-        });
+    var consent = localStorage.getItem(CONSENT_KEY);
 
-        document.querySelectorAll(".cookie-btn-reject").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                localStorage.setItem(CONSENT_KEY, "denied");
-                updateGTMConsent("denied");
-                hideBanner();
-            });
+    
+    if (consent === "granted" || consent === "denied") {
+        updateGTMConsent(consent);
+        var mobile = document.getElementById("cookie-banner-mobile");
+        var desktop = document.getElementById("cookie-banner-desktop");
+        if (mobile) mobile.style.display = "none";
+        if (desktop) desktop.style.display = "none";
+    } else {
+        setTimeout(showBanner, 1000);
+    }
+
+    document.querySelectorAll(".cookie-btn-accept").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            localStorage.setItem(CONSENT_KEY, "granted");
+            updateGTMConsent("granted");
+            hideBanner();
         });
-    })();
+    });
+
+    document.querySelectorAll(".cookie-btn-reject").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            localStorage.setItem(CONSENT_KEY, "denied");
+            updateGTMConsent("denied");
+            hideBanner();
+        });
+    });
+  }
+
+  checkCookieBanner()
+
+  document.addEventListener("astro:page-load", checkCookieBanner)
 </script>
