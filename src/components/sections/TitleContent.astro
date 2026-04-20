@@ -2,20 +2,24 @@
 import DatoImage from "../global/DatoImage.astro";
 
 const { data } = Astro.props;
+
+console.log(data)
 ---
 
-<section class="section-title-content flex flex-col gap-25 md:gap-35">
+<section class="section-title-content flex flex-col gap-25 md:gap-35 relative">
     {
         data.items.map((item: any) => (
-            <div class="flex flex-col gap-8">
-                {item.title && <p class="text-caption">{item.title}</p>}
-                {item.content && (
-                    <div class="text-nav wysiwyg-content" set:html={item.content} />
-                )}
-                {item.image?.responsiveImage && (
-                    <div class="w-full">
-                        <DatoImage imgClass="w-full" data={item.image.responsiveImage} />
-                    </div>
+            <div class="gap-8 flex relative w-full">
+                <div class="w-full">
+                  {item.title && <p class="text-caption">{item.title}</p>}
+                  {item.content && (
+                      <div class="text-nav wysiwyg-content" set:html={item.content} />
+                  )}
+                </div>
+                {item.image?.[0]?.responsiveImage && (
+                  <div class="w-full">
+                    <DatoImage imgClass="h-60 w-full object-contain object-top-right" data={item.image?.[0].responsiveImage} />
+                  </div>
                 )}
             </div>
         ))
