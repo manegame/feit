@@ -32,10 +32,10 @@ const columns = [col0, col1, col2];
     class="relative h-dvh overflow-hidden select-none"
 >
     <div class="absolute inset-0 z-1 flex items-center justify-center">
-        <div class="text-nav flex w-full max-w-[900px] justify-center gap-30 px-20 lg:gap-40">
+        <div class="text-nav flex w-full max-w-[900px] justify-start gap-30 px-20 lg:gap-40">
             {
                 columns.map((col) => (
-                    <div class="flex flex-col items-center gap-6 lg:gap-8">
+                    <div class="flex flex-col items-start gap-6 lg:gap-8">
                         {col.map((director) => (
                             <div
                                 data-video={director.showcase?.video?.url}

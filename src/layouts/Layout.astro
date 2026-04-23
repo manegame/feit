@@ -5,7 +5,6 @@ import "lenis/dist/lenis.css";
 import { ClientRouter } from "astro:transitions";
 
 import Navigation from "../components/global/Navigation.astro";
-import Loader from "../components/global/Loader.astro";
 import Grid from "../components/global/Grid.astro";
 import Seo from "../components/global/Seo.astro";
 
@@ -59,7 +58,6 @@ const { layout, template, seoMetaTags, slugToModelApiKeyMap } = Astro.props;
         <!-- End Google Tag Manager (noscript) -->
         {layout?.navigation && <Navigation template={template} data={layout.navigation} />}
         <slot />
-        <Loader />
         {isPreview() && <Grid />}
         <CookieBanner />
         <div
