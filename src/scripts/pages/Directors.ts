@@ -28,7 +28,8 @@ export default class DirectorsPage extends Page {
     currentDirector!: HTMLElement;
 
     allVideos!: { video: string; index: number }[];
-    videosToLoad!: { video: string; index: number }[];
+    videosToPreload!: { video: string; index: number }[];
+    preloadedVideos!: Set<string>;
     isLowPowerMode: boolean = false;
 
     scrollTo!: any;
@@ -68,38 +69,6 @@ export default class DirectorsPage extends Page {
         await super.init();
     }
 
-    async fetchVideoAsBlob(videoUrl: string): Promise<string> {
-        if (this.app.store.homeVideoBlobs.has(videoUrl)) {
-            return this.app.store.homeVideoBlobs.get(videoUrl)!;
-        }
-
-        const response = await fetch("/api/getWiredriveVideo", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ video: videoUrl }),
-            signal: this.abortController.signal,
-        });
-
-        if (!response.ok) {
-            throw new Error(
-                `Failed to fetch ${videoUrl}: ${response.statusText}`,
-            );
-        }
-
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-
-        this.app.store.homeVideoBlobs.set(videoUrl, blobUrl);
-
-        this.videosToLoad = this.videosToLoad.filter(
-            (vid) => vid.video !== videoUrl,
-        );
-
-        return blobUrl;
-    }
-
     async loadAndSetFirstVideo() {
         this.videoEl = this.container.querySelector(
             "#director-video",
@@ -109,9 +78,14 @@ export default class DirectorsPage extends Page {
             "#low-power-fallback",
         ) as HTMLImageElement;
 
+        const firstVideoUrl = this.currentDirector.dataset.video!;
+
         this.lowPowerFallbackEl.src = this.currentDirector.dataset.poster!;
         this.videoEl.poster = this.currentDirector.dataset.poster!;
+        this.videoEl.src = firstVideoUrl;
         this.videoEl.load();
+
+        this.preloadedVideos.add(firstVideoUrl);
 
         this.videoEl.play().catch((error) => {
             if (error.name === "NotAllowedError") {
@@ -119,12 +93,6 @@ export default class DirectorsPage extends Page {
                 this.enableLowPowerModeFallback();
             }
         });
-
-        const firstVideoUrl = this.currentDirector.dataset.video!;
-        await this.fetchVideoAsBlob(firstVideoUrl);
-
-        this.videoEl.src =
-            this.app.store.homeVideoBlobs.get(firstVideoUrl) || firstVideoUrl;
 
         return new Promise<void>((resolve) => {
             if (this.isLowPowerMode) {
@@ -141,7 +109,7 @@ export default class DirectorsPage extends Page {
         });
     }
 
-    async preloadOtherVideos() {
+    preloadOtherVideos() {
         const initialIndex = this.currentIndex;
 
         const getCircularDistance = (fromIndex: number, toIndex: number) => {
@@ -150,28 +118,45 @@ export default class DirectorsPage extends Page {
             return Math.min(directDist, wrapDist);
         };
 
-        // We sort them based on their distance from the initial index
-        this.videosToLoad.sort((a, b) => {
-            const distA = getCircularDistance(initialIndex, a.index);
-            const distB = getCircularDistance(initialIndex, b.index);
-            return distA - distB;
-        });
+        const queue = this.videosToPreload
+            .filter(({ video }) => !this.preloadedVideos.has(video))
+            .sort((a, b) => {
+                const distA = getCircularDistance(initialIndex, a.index);
+                const distB = getCircularDistance(initialIndex, b.index);
+                return distA - distB;
+            });
 
-        const videosToPreload = [...this.videosToLoad];
+        const warmCache = ({ video }: { video: string }) => {
+            if (this.preloadedVideos.has(video)) return;
+            this.preloadedVideos.add(video);
 
-        const preloadPromises = videosToPreload.map(async ({ video }) => {
-            try {
-                await this.fetchVideoAsBlob(video);
-            } catch (error) {
-                // Ignore abort errors when page is being destroyed
-                if ((error as any)?.name === "AbortError") {
-                    return;
-                }
-                console.error(`Failed to preload ${video}:`, error);
-            }
-        });
+            const link = document.createElement("link");
+            link.rel = "preload";
+            link.as = "video";
+            link.href = video;
+            link.setAttribute("data-director-video-preload", "");
+            document.head.appendChild(link);
 
-        await Promise.allSettled(preloadPromises);
+            this.abortController.signal.addEventListener(
+                "abort",
+                () => link.remove(),
+                { once: true },
+            );
+        };
+
+        const scheduleNext = () => {
+            if (this.abortController.signal.aborted) return;
+            const next = queue.shift();
+            if (!next) return;
+            warmCache(next);
+
+            const idle =
+                (window as any).requestIdleCallback ||
+                ((cb: () => void) => setTimeout(cb, 200));
+            idle(scheduleNext);
+        };
+
+        scheduleNext();
     }
 
     enableLowPowerModeFallback() {
@@ -212,15 +197,14 @@ export default class DirectorsPage extends Page {
     setBackgroundVideo() {
         const videoUrl = this.currentDirector.dataset.video!;
         const videoPoster = this.currentDirector.dataset.poster!;
-        const srcToUse =
-            this.app.store.homeVideoBlobs.get(videoUrl) || videoUrl;
 
-        if (srcToUse === this.videoEl.src) return;
+        if (videoUrl === this.videoEl.src) return;
 
         this.lowPowerFallbackEl.src = videoPoster;
-        this.videoEl.src = srcToUse;
+        this.videoEl.src = videoUrl;
         this.videoEl.poster = videoPoster;
         this.videoEl.load();
+        this.preloadedVideos.add(videoUrl);
 
         if (!this.isLowPowerMode) {
             this.videoEl.play().catch((error) => {
@@ -312,16 +296,17 @@ export default class DirectorsPage extends Page {
         }));
 
         // Remove duplicates
-        this.videosToLoad = Array.from(
+        this.videosToPreload = Array.from(
             new Set(allVideos.map((v) => v.video)),
         ).map((video) => {
             return allVideos.find((v) => v.video === video)!;
         });
 
-        // persistent store between page swaps
-        if (!this.app.store.homeVideoBlobs) {
-            this.app.store.homeVideoBlobs = new Map();
+        // Persisted across page swaps so we don't re-warm the cache unnecessarily
+        if (!this.app.store.directorsPreloadedVideos) {
+            this.app.store.directorsPreloadedVideos = new Set<string>();
         }
+        this.preloadedVideos = this.app.store.directorsPreloadedVideos;
 
         // Only when NUMBER_OF_DUPLICATES is 2
         this.wrap = gsap.utils.wrap(
