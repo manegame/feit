@@ -31,13 +31,13 @@ const { video } = Astro.props;
         <div class="absolute inset-0 z-1 bg-black opacity-40"></div>
         <div class="absolute inset-0 hidden size-full overflow-hidden object-cover md:block">
             <video
-                class="size-full scale-120"
+                class="director-video size-full scale-120"
                 autoplay
                 muted
                 loop
                 playsinline
                 poster={video.preview.poster?.url}
-                src={video.preview.video?.url}
+                data-src={video.preview.video?.url}
             >
             </video>
         </div>

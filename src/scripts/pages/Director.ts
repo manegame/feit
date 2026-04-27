@@ -36,9 +36,22 @@ export default class Director extends Page {
             this.setupMobileTabs();
             this.setupClose();
             this.setupSlider();
+            this.loadVideos();
         }
 
         await super.init();
+    }
+
+    loadVideos() {
+        const videos = this.container?.querySelectorAll(
+            ".director-video",
+        ) as NodeListOf<HTMLVideoElement>;
+        videos?.forEach((video) => {
+            const src = video.getAttribute("data-src");
+            if (src && !video.getAttribute("src")) video.setAttribute("src", src);
+            video.load();
+            video.play().catch(() => {});
+        });
     }
 
     computeSliderClamp() {
