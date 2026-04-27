@@ -39,7 +39,7 @@ export default class Video extends Page {
         this.showOverlay = true;
         this.OVERLAY_TIME = 1000;
 
-        if (this.video?.readyState >= 2) this.setupVideoControls();
+        if (this.video?.readyState >= 1) this.setupVideoControls();
 
         if (this.app.store.workPlaylist) {
             this.setClosePrevNextVideosLinks();
