@@ -55,6 +55,8 @@ export default class Video extends Page {
             },
         );
 
+        this.video.load();
+
         await super.init();
     }
 
