@@ -21,6 +21,34 @@ export default `
                                 _modelApiKey
                                 slug
                             }
+                            ... on BasicChRecord {
+                                _modelApiKey
+                                slug
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ... on BasicChRecord {
+            _modelApiKey
+            slug
+            subnavigation {
+                id
+                blocks {
+                    links {
+                        id
+                        label
+                        externalLink
+                        internalLink {
+                            ... on BasicRecord {
+                                _modelApiKey
+                                slug
+                            }
+                            ... on BasicChRecord {
+                                _modelApiKey
+                                slug
+                            }
                         }
                     }
                 }
